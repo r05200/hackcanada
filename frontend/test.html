@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Route Tester</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: monospace; background: #1a1a2e; color: #eee; padding: 20px; }
+        h1 { margin-bottom: 20px; color: #e94560; }
+        h2 { margin: 20px 0 10px; color: #0f3460; background: #e94560; display: inline-block; padding: 4px 12px; }
+        .section { margin-bottom: 30px; border: 1px solid #333; padding: 15px; border-radius: 8px; }
+        .row { display: flex; gap: 10px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+        input { background: #16213e; border: 1px solid #444; color: #eee; padding: 6px 10px; border-radius: 4px; font-family: monospace; }
+        button { background: #e94560; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: monospace; font-weight: bold; }
+        button:hover { background: #c73652; }
+        button.get { background: #0f3460; }
+        button.get:hover { background: #0a2647; }
+        #output { margin-top: 20px; background: #16213e; padding: 15px; border-radius: 8px; min-height: 100px; white-space: pre-wrap; font-size: 13px; max-height: 400px; overflow-y: auto; }
+        label { color: #aaa; font-size: 12px; min-width: 80px; }
+    </style>
+</head>
+<body>
+    <h1>Backend Route Tester</h1>
+    <p style="color:#aaa; margin-bottom:15px;">Base URL: <input id="baseUrl" value="http://127.0.0.1:5001" style="width:250px;"> | Token is stored after login.</p>
+
+    <!-- AUTH -->
+    <div class="section">
+        <h2>Auth</h2>
+        <div class="row">
+            <label>Username</label><input id="regUsername" placeholder="username">
+            <label>Email</label><input id="regEmail" placeholder="email">
+            <label>Password</label><input id="regPassword" placeholder="password" type="password">
+            <label>Neighborhood</label><input id="regNeighborhood" placeholder="neighborhood">
+            <button onclick="register()">POST /register</button>
+        </div>
+        <div class="row">
+            <label>Email</label><input id="loginEmail" placeholder="email">
+            <label>Password</label><input id="loginPassword" placeholder="password" type="password">
+            <button onclick="login()">POST /login</button>
+        </div>
+        <div class="row">
+            <button onclick="logout()">POST /logout</button>
+        </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="section">
+        <h2>Users</h2>
+        <div class="row">
+            <button class="get" onclick="getProfile()">GET /users/me</button>
+            <button class="get" onclick="getBadges()">GET /users/me/badges</button>
+        </div>
+        <div class="row">
+            <label>User ID</label><input id="userId" placeholder="ObjectId">
+            <button class="get" onclick="getUser()">GET /users/:id</button>
+        </div>
+    </div>
+
+    <!-- CHALLENGES -->
+    <div class="section">
+        <h2>Challenges</h2>
+        <div class="row">
+            <button class="get" onclick="listChallenges()">GET /challenges</button>
+        </div>
+        <div class="row">
+            <label>Challenge ID</label><input id="challengeId" placeholder="ObjectId">
+            <button class="get" onclick="getChallenge()">GET /challenges/:id</button>
+        </div>
+        <div class="row">
+            <label>Title</label><input id="chalTitle" placeholder="title">
+            <label>Description</label><input id="chalDesc" placeholder="description">
+            <label>Category</label><input id="chalCategory" placeholder="category">
+            <label>XP</label><input id="chalXp" placeholder="100" type="number" style="width:60px;">
+            <button onclick="createChallenge()">POST /challenges</button>
+        </div>
+        <div class="row">
+            <label>Challenge ID</label><input id="submitChalId" placeholder="ObjectId">
+            <label>Proof URL</label><input id="proofUrl" placeholder="https://...">
+            <button onclick="submitChallenge()">POST /challenges/:id/submit</button>
+        </div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="section">
+        <h2>Events</h2>
+        <div class="row">
+            <label>Neighborhood</label><input id="eventNeighborhood" placeholder="(optional)">
+            <button class="get" onclick="listEvents()">GET /events</button>
+        </div>
+        <div class="row">
+            <label>Event ID</label><input id="eventId" placeholder="ObjectId">
+            <button class="get" onclick="getEvent()">GET /events/:id</button>
+        </div>
+        <div class="row">
+            <label>Title</label><input id="eventTitle" placeholder="title">
+            <label>Description</label><input id="eventDesc" placeholder="description">
+            <label>Location</label><input id="eventLocation" placeholder="location">
+            <label>Tags</label><input id="eventTags" placeholder="tag1,tag2">
+            <button onclick="createEvent()">POST /events</button>
+        </div>
+        <div class="row">
+            <label>Event ID</label><input id="checkinEventId" placeholder="ObjectId">
+            <button onclick="checkinEvent()">POST /events/:id/checkin</button>
+        </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="section">
+        <h2>Leaderboard</h2>
+        <div class="row">
+            <label>Limit</label><input id="lbLimit" placeholder="20" type="number" style="width:60px;">
+            <button class="get" onclick="globalLeaderboard()">GET /leaderboard</button>
+        </div>
+        <div class="row">
+            <label>Neighborhood</label><input id="lbNeighborhood" placeholder="neighborhood">
+            <button class="get" onclick="neighborhoodLeaderboard()">GET /leaderboard/neighborhood/:name</button>
+        </div>
+    </div>
+
+    <!-- AI -->
+    <div class="section">
+        <h2>AI</h2>
+        <div class="row">
+            <button class="get" onclick="recommend()">GET /ai/recommend</button>
+        </div>
+    </div>
+
+    <h2 style="background:#0f3460;">Console Output</h2>
+    <div id="output">Responses will appear here...</div>
+
+    <script>
+        let token = null;
+
+        function base() { return document.getElementById('baseUrl').value; }
+
+        function log(label, data) {
+            const el = document.getElementById('output');
+            const time = new Date().toLocaleTimeString();
+            const msg = `[${time}] ${label}\n${JSON.stringify(data, null, 2)}\n${'─'.repeat(50)}\n`;
+            el.textContent = msg + el.textContent;
+            console.log(label, data);
+        }
+
+        function headers(json = true) {
+            const h = {};
+            if (json) h['Content-Type'] = 'application/json';
+            if (token) h['Authorization'] = `Bearer ${token}`;
+            return h;
+        }
+
+        async function api(method, path, body = null, label = '') {
+            try {
+                const opts = { method, headers: headers() };
+                if (body) opts.body = JSON.stringify(body);
+                const res = await fetch(base() + path, opts);
+                const data = await res.json();
+                log(`${label || method + ' ' + path} [${res.status}]`, data);
+                return data;
+            } catch (err) {
+                log(`ERROR ${label || path}`, { error: err.message });
+            }
+        }
+
+        // AUTH
+        async function register() {
+            await api('POST', '/api/auth/register', {
+                username: document.getElementById('regUsername').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value,
+                neighborhood: document.getElementById('regNeighborhood').value,
+            }, 'POST /auth/register');
+        }
+
+        async function login() {
+            const data = await api('POST', '/api/auth/login', {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value,
+            }, 'POST /auth/login');
+            if (data && data.access_token) {
+                token = data.access_token;
+                log('TOKEN SAVED', { token: token.substring(0, 30) + '...' });
+            }
+        }
+
+        async function logout() {
+            await api('POST', '/api/auth/logout', {}, 'POST /auth/logout');
+            token = null;
+            log('TOKEN CLEARED', {});
+        }
+
+        // USERS
+        async function getProfile() { await api('GET', '/api/users/me', null, 'GET /users/me'); }
+        async function getBadges() { await api('GET', '/api/users/me/badges', null, 'GET /users/me/badges'); }
+        async function getUser() {
+            const id = document.getElementById('userId').value;
+            await api('GET', `/api/users/${id}`, null, `GET /users/${id}`);
+        }
+
+        // CHALLENGES
+        async function listChallenges() { await api('GET', '/api/challenges/', null, 'GET /challenges'); }
+        async function getChallenge() {
+            const id = document.getElementById('challengeId').value;
+            await api('GET', `/api/challenges/${id}`, null, `GET /challenges/${id}`);
+        }
+        async function createChallenge() {
+            await api('POST', '/api/challenges/', {
+                title: document.getElementById('chalTitle').value,
+                description: document.getElementById('chalDesc').value,
+                category: document.getElementById('chalCategory').value,
+                xp_reward: parseInt(document.getElementById('chalXp').value) || 100,
+            }, 'POST /challenges');
+        }
+        async function submitChallenge() {
+            const id = document.getElementById('submitChalId').value;
+            await api('POST', `/api/challenges/${id}/submit`, {
+                proof_url: document.getElementById('proofUrl').value,
+            }, `POST /challenges/${id}/submit`);
+        }
+
+        // EVENTS
+        async function listEvents() {
+            const n = document.getElementById('eventNeighborhood').value;
+            const qs = n ? `?neighborhood=${encodeURIComponent(n)}` : '';
+            await api('GET', `/api/events/${qs}`, null, 'GET /events');
+        }
+        async function getEvent() {
+            const id = document.getElementById('eventId').value;
+            await api('GET', `/api/events/${id}`, null, `GET /events/${id}`);
+        }
+        async function createEvent() {
+            await api('POST', '/api/events/', {
+                title: document.getElementById('eventTitle').value,
+                description: document.getElementById('eventDesc').value,
+                location: document.getElementById('eventLocation').value,
+                tags: document.getElementById('eventTags').value.split(',').map(t => t.trim()).filter(Boolean),
+            }, 'POST /events');
+        }
+        async function checkinEvent() {
+            const id = document.getElementById('checkinEventId').value;
+            await api('POST', `/api/events/${id}/checkin`, {}, `POST /events/${id}/checkin`);
+        }
+
+        // LEADERBOARD
+        async function globalLeaderboard() {
+            const limit = document.getElementById('lbLimit').value || 20;
+            await api('GET', `/api/leaderboard/?limit=${limit}`, null, 'GET /leaderboard');
+        }
+        async function neighborhoodLeaderboard() {
+            const n = document.getElementById('lbNeighborhood').value;
+            const limit = document.getElementById('lbLimit').value || 20;
+            await api('GET', `/api/leaderboard/neighborhood/${encodeURIComponent(n)}?limit=${limit}`, null, `GET /leaderboard/neighborhood/${n}`);
+        }
+
+        // AI
+        async function recommend() { await api('GET', '/api/ai/recommend', null, 'GET /ai/recommend'); }
+    </script>
+</body>
+</html>
