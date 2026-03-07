@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request as flask_request, make_response, jsonify
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -17,6 +17,29 @@ def create_app(config_name="default"):
     bcrypt.init_app(app)
     jwt.init_app(app)
     CORS(app)
+
+    @app.before_request
+    def handle_preflight():
+        if flask_request.method == "OPTIONS":
+            res = make_response()
+            res.headers["Access-Control-Allow-Origin"] = "*"
+            res.headers["Access-Control-Allow-Headers"] = "*"
+            res.headers["Access-Control-Allow-Methods"] = "*"
+            return res
+
+    @app.after_request
+    def add_cors_headers(response):
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        return response
+
+    @app.errorhandler(Exception)
+    def handle_error(e):
+        response = jsonify({"message": str(e)})
+        response.status_code = 500
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response
 
     from app.routes.auth import auth_bp
     from app.routes.users import users_bp
