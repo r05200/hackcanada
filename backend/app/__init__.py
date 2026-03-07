@@ -1,17 +1,20 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from pymongo import MongoClient
 from config import config
+from app.utils import bcrypt
 
-db = SQLAlchemy()
 jwt = JWTManager()
 
 def create_app(config_name="default"):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
-    db.init_app(app)
+    mongo = MongoClient(app.config["MONGO_URI"])
+    app.db = mongo.get_database()
+
+    bcrypt.init_app(app)
     jwt.init_app(app)
     CORS(app)
 
@@ -28,8 +31,5 @@ def create_app(config_name="default"):
     app.register_blueprint(events_bp, url_prefix="/api/events")
     app.register_blueprint(leaderboard_bp, url_prefix="/api/leaderboard")
     app.register_blueprint(ai_bp, url_prefix="/api/ai")
-
-    with app.app_context():
-        db.create_all()
 
     return app

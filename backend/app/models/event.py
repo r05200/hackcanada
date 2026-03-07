@@ -1,27 +1,31 @@
-from app import db
-from datetime import datetime
+from datetime import datetime, timezone
 
-class Event(db.Model):
-    __tablename__ = "events"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text)
-    location = db.Column(db.String(200))
-    neighborhood = db.Column(db.String(120))
-    starts_at = db.Column(db.DateTime)
-    xp_reward = db.Column(db.Integer, default=50)
-    created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def to_dict(self):
+class Event:
+    @staticmethod
+    def to_dict(doc):
+        if not doc:
+            return None
         return {
-            "id": self.id,
-            "title": self.title,
-            "description": self.description,
-            "location": self.location,
-            "neighborhood": self.neighborhood,
-            "starts_at": self.starts_at.isoformat() if self.starts_at else None,
-            "xp_reward": self.xp_reward,
-            "created_by": self.created_by,
+            "id": str(doc["_id"]),
+            "title": doc.get("title"),
+            "description": doc.get("description"),
+            "location": doc.get("location"),
+            "starts_at": doc.get("starts_at").isoformat() if doc.get("starts_at") else None,
+            "xp_reward": doc.get("xp_reward", 100),
+            "tags": doc.get("tags", []),
+            "created_by": doc.get("created_by"),
+        }
+
+    @staticmethod
+    def create(title, description, location, starts_at, created_by, xp_reward=100, tags=None):
+        return {
+            "title": title,
+            "description": description,
+            "location": location,
+            "xp_reward": xp_reward,
+            "is_active": True,
+            "starts_at": starts_at,
+            "tags": tags or [],
+            "created_by": created_by,
+            "created_at": datetime.now(timezone.utc),
         }

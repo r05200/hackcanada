@@ -1,25 +1,28 @@
-from app import db
-from datetime import datetime
+from datetime import datetime, timezone
 
-class Submission(db.Model):
-    __tablename__ = "submissions"
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    challenge_id = db.Column(db.Integer, db.ForeignKey("challenges.id"), nullable=False)
-    proof_url = db.Column(db.String(500))  # photo/doc proof uploaded by user
-    status = db.Column(db.String(20), default="pending")  # pending | approved | rejected
-    ai_confidence = db.Column(db.Float)  # score from AI verification model
-    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
-    reviewed_at = db.Column(db.DateTime)
-
-    def to_dict(self):
+class Submission:
+    @staticmethod
+    def to_dict(doc):
+        if not doc:
+            return None
         return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "challenge_id": self.challenge_id,
-            "proof_url": self.proof_url,
-            "status": self.status,
-            "ai_confidence": self.ai_confidence,
-            "submitted_at": self.submitted_at.isoformat(),
+            "id": str(doc["_id"]),
+            "user_id": doc.get("user_id"),
+            "challenge_id": doc.get("challenge_id"),
+            "proof_url": doc.get("proof_url"),
+            "status": doc.get("status", "pending"),
+            "ai_confidence": doc.get("ai_confidence"),
+            "submitted_at": doc.get("submitted_at").isoformat() if doc.get("submitted_at") else None,
+        }
+
+    @staticmethod
+    def create(user_id, challenge_id, proof_url=None):
+        return {
+            "user_id": user_id,
+            "challenge_id": challenge_id,
+            "proof_url": proof_url,
+            "status": "pending",
+            "ai_confidence": None,
+            "submitted_at": datetime.now(timezone.utc),
+            "reviewed_at": None,
         }

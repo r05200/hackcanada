@@ -8,19 +8,7 @@ model = CivicAIModel()
 @ai_bp.route("/verify", methods=["POST"])
 @jwt_required()
 def verify_submission():
-    """
-    Run AI verification on a submission proof.
-    Expects JSON: { "proof_url": str, "challenge_category": str }
-    Returns a confidence score and verdict.
-    """
-    data = request.get_json()
-    proof_url = data.get("proof_url")
-    category = data.get("challenge_category")
-
-    confidence = model.verify(proof_url=proof_url, category=category)
-    verdict = "approved" if confidence >= 0.75 else "rejected"
-
-    return jsonify({"confidence": confidence, "verdict": verdict}), 200
+   pass
 
 @ai_bp.route("/recommend", methods=["GET"])
 @jwt_required()
