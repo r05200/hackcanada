@@ -68,7 +68,7 @@ models = [model1, model2, model3, model4, model5]
 max_index = 0
 max_result = -inf
 
-for i in range(models):
+for i in range(len(models)):
     if models[i][0]["predictions"]['predictions'][0]["confidence"] > max_result:
         max_index = i
         max_result = models[i][0]["predictions"]['predictions'][0]["confidence"]
