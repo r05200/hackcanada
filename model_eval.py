@@ -8,11 +8,11 @@ def classify_image():
 
     client = InferenceHTTPClient(
         api_url="https://serverless.roboflow.com",
-        api_key="jFwyMz8yRQbXhLuPKbc4"
+        api_key="u9syXdrvnXjWalaL0myP"
     )
 
     model1 = client.run_workflow(
-        workspace_name="ryes-workspace",
+        workspace_name="hackhive",
         workflow_id="text-recognition-road-defect",
         images={
             "image": uploaded # Path to your image file
@@ -21,7 +21,7 @@ def classify_image():
     )
 
     model2 = client.run_workflow(
-        workspace_name="ryes-workspace",
+        workspace_name="hackhive",
         workflow_id="text-recognition-fallen-trees",
         images={
             "image": uploaded # Path to your image file
@@ -30,7 +30,7 @@ def classify_image():
     )
 
     model3 = client.run_workflow(
-        workspace_name="ryes-workspace",
+        workspace_name="hackhive",
         workflow_id="text-recognition-pothole",
         images={
             "image": uploaded # Path to your image file
@@ -38,12 +38,7 @@ def classify_image():
         use_cache=True # Speeds up repeated requests
     )
 
-    client2 = InferenceHTTPClient(
-        api_url="https://serverless.roboflow.com/",
-        api_key="u9syXdrvnXjWalaL0myP"
-    )
-
-    model4 = client2.run_workflow(
+    model4 = client.run_workflow(
         workspace_name="hackhive",
         workflow_id="text-recognition-flooding",
         images={
@@ -52,7 +47,7 @@ def classify_image():
         use_cache=True # Speeds up repeated requests
     )
 
-    model5 = client2.run_workflow(
+    model5 = client.run_workflow(
         workspace_name="hackhive",
         workflow_id="text-recognition-broken-lights",
         images={
