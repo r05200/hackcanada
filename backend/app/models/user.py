@@ -17,6 +17,8 @@ class User:
             "streak": doc.get("streak", 0),
             "events_attended": doc.get("events_attended", 0),
             "reports_filed": doc.get("reports_filed", 0),
+            "active_challenges": doc.get("active_challenges", []),
+            "completed_challenges": doc.get("completed_challenges", []),
         }
 
     @staticmethod
@@ -31,5 +33,8 @@ class User:
             "neighborhood": neighborhood,
             "streak": 0,
             "events_attended": 0,
+            "reports_filed": 0,
+            "active_challenges": [],
+            "completed_challenges": [],
             "created_at": datetime.now(timezone.utc),
         }

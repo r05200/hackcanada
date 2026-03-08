@@ -2,9 +2,10 @@ import os
 
 from inference_sdk import InferenceHTTPClient
 
-uploaded = os.path.abspath(os.path.expanduser("~/Downloads/UPLOADED_IMAGE.jpg")) # CHANGE PATH HERE
+UPLOAD_PATH = os.path.abspath(os.path.expanduser("~/Downloads/UPLOADED_IMAGE.jpg"))
 
-def classify_image():
+def classify_image(image_path=None):
+    uploaded = image_path or UPLOAD_PATH
 
     client = InferenceHTTPClient(
         api_url="https://serverless.roboflow.com",
@@ -79,4 +80,5 @@ def classify_image():
 
     return ""
 
-print(classify_image()) # OUTPUT
+if __name__ == "__main__":
+    print(classify_image())

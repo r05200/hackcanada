@@ -97,22 +97,27 @@ export default function Profile() {
       <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-5">
           <span className="material-symbols-outlined text-amber-500 fill">workspace_premium</span>
-          Earned Badges
+          Badges
           <span className="text-xs font-bold text-slate-400 ml-auto">{badges.length} earned</span>
         </h2>
         {badgesLoading ? (
           <Spinner />
-        ) : badges.length > 0 ? (
+        ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {badges.map((b) => (
               <BadgeCard key={b} name={b} />
             ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <span className="material-symbols-outlined text-slate-200 text-5xl mb-3 block">workspace_premium</span>
-            <p className="text-slate-500 text-sm font-medium">No badges earned yet</p>
-            <p className="text-slate-400 text-xs mt-1">Complete challenges to earn your first badge!</p>
+            {/* Locked potential badges */}
+            <BadgeCard
+              name="Street Guardian"
+              description="Report 10 issues in your area"
+              locked
+            />
+            <BadgeCard
+              name="Event Regular"
+              description="Attend 5 community events"
+              locked
+            />
           </div>
         )}
       </div>
@@ -181,13 +186,30 @@ function AnimatedStatCard({ icon, label, value, color, bg, border }) {
   );
 }
 
-function BadgeCard({ name }) {
+function BadgeCard({ name, description, locked }) {
   const icons = {
     "Early Bird": "wb_twilight",
     "Poll Master": "query_stats",
     "First Report": "flag",
     "Community Hero": "military_tech",
+    "Street Guardian": "shield",
+    "Event Regular": "calendar_month",
   };
+
+  if (locked) {
+    return (
+      <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-50 border border-slate-200 opacity-50 cursor-not-allowed select-none">
+        <div className="relative size-12 rounded-full bg-slate-200 flex items-center justify-center">
+          <span className="material-symbols-outlined text-slate-400 fill">{icons[name] || "stars"}</span>
+          <span className="absolute -top-1 -right-1 size-5 rounded-full bg-slate-300 flex items-center justify-center">
+            <span className="material-symbols-outlined text-slate-500 text-xs">lock</span>
+          </span>
+        </div>
+        <span className="text-xs font-bold text-slate-500 text-center">{name}</span>
+        {description && <span className="text-[10px] text-slate-400 text-center leading-tight">{description}</span>}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-amber-50 border border-amber-100 hover:scale-[1.05] transition-transform cursor-default">

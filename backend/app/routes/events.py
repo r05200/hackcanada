@@ -18,21 +18,14 @@ def list_events():
 @events_bp.route("/<event_id>", methods=["GET"])
 def get_event(event_id):
     """Get a single event."""
-    event = current_app.db.events.find_one({"_id": ObjectId(event_id)})
+    try:
+        oid = ObjectId(event_id)
+    except Exception:
+        return jsonify({"message": "invalid id"}), 400
+    event = current_app.db.events.find_one({"_id": oid})
     if not event:
         return jsonify({"message": "not found"}), 404
     return jsonify(Event.to_dict(event)), 200
-
-@events_bp.route("/<keyword>", methods=["GET"])
-def get_event_keyword(keyword):
-    keywords = keyword.split(" ")
-    matching_events = []
-    events = current_app.db.events.find()
-    for event in events:
-        for keyword in keywords:
-            if keyword.lower() in event.title.lower():
-                matching_events.append(event)
-    return matching_events
 
 @events_bp.route("/", methods=["POST"])
 @jwt_required()

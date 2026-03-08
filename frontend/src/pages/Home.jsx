@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { isLoggedIn } from "../lib/auth";
 import { getProfile } from "../api/users";
+import { acceptChallenge } from "../api/users";
 import useFetch from "../hooks/useFetch";
 import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
@@ -256,6 +257,13 @@ function DailyChallengesSection() {
     setAccepted((prev) => [...prev, ch]);
     setChallenges((prev) => prev.filter((c) => c._id !== ch._id));
     setExpanded(null);
+    // Persist to localStorage so Challenges tab can read them
+    const existing = JSON.parse(localStorage.getItem("civic_active_challenges") || "[]");
+    if (!existing.find((e) => e._id === ch._id)) {
+      localStorage.setItem("civic_active_challenges", JSON.stringify([...existing, ch]));
+    }
+    // Persist to DB
+    acceptChallenge(ch).catch(() => {});
   };
 
   const handleDecline = (ch) => {

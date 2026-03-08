@@ -1,24 +1,13 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
-import { submitReport } from "../api/reports";
+import { submitReport, analyzeImage } from "../api/reports";
 
 const URGENCY_LEVELS = [
   { id: "low", label: "Low", color: "text-green-600 bg-green-50 border-green-200", icon: "info" },
   { id: "medium", label: "Medium", color: "text-amber-600 bg-amber-50 border-amber-200", icon: "warning" },
   { id: "high", label: "High", color: "text-orange-600 bg-orange-50 border-orange-200", icon: "priority_high" },
   { id: "critical", label: "Critical", color: "text-red-600 bg-red-50 border-red-200", icon: "emergency" },
-];
-
-const AI_TOPICS = [
-  "Road Defect",
-  "Pothole",
-  "Fallen Tree / Branches",
-  "Flooding",
-  "Broken Streetlight",
-  "Graffiti / Vandalism",
-  "Illegal Dumping",
-  "Infrastructure Damage",
 ];
 
 export default function Report() {
@@ -35,21 +24,24 @@ export default function Report() {
   const [success, setSuccess] = useState(false);
   const [dragActive, setDragActive] = useState(false);
 
-  const handleImageSelect = (file) => {
+  const handleImageSelect = async (file) => {
     if (!file || !file.type.startsWith("image/")) return;
     setImage(file);
     const reader = new FileReader();
     reader.onload = (e) => setImagePreview(e.target.result);
     reader.readAsDataURL(file);
 
-    // Simulate AI analysis
+    // Upload to backend → save as UPLOADED_IMAGE.jpg → run AI
     setAiAnalyzing(true);
     setAiTopic("");
-    setTimeout(() => {
-      const detected = AI_TOPICS[Math.floor(Math.random() * AI_TOPICS.length)];
-      setAiTopic(detected);
+    try {
+      const res = await analyzeImage(file);
+      setAiTopic(res.data.topic || "Unknown");
+    } catch {
+      setAiTopic("Detection failed");
+    } finally {
       setAiAnalyzing(false);
-    }, 1800);
+    }
   };
 
   const handleDrop = (e) => {

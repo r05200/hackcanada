@@ -47,6 +47,7 @@ def create_app(config_name="default"):
     from app.routes.events import events_bp
     from app.routes.leaderboard import leaderboard_bp
     from app.routes.reports import reports_bp
+    from app.routes.ai import ai_bp
 
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
@@ -55,6 +56,7 @@ def create_app(config_name="default"):
     app.register_blueprint(events_bp, url_prefix="/api/events")
     app.register_blueprint(leaderboard_bp, url_prefix="/api/leaderboard")
     app.register_blueprint(reports_bp, url_prefix="/api/reports")
+    app.register_blueprint(ai_bp, url_prefix="/api/ai")
 
 
     return app
