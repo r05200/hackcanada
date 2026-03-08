@@ -1,0 +1,185 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Toronto Centre",
+        "type": "mp",
+        "slug": "toronto-centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.4100, 43.6700],
+          [-79.3700, 43.6700],
+          [-79.3700, 43.6400],
+          [-79.4100, 43.6400],
+          [-79.4100, 43.6700]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Spadina—Fort York",
+        "type": "mp",
+        "slug": "spadina-fort-york"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.4500, 43.6500],
+          [-79.4100, 43.6500],
+          [-79.4100, 43.6200],
+          [-79.4500, 43.6200],
+          [-79.4500, 43.6500]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "University—Rosedale",
+        "type": "mp",
+        "slug": "university-rosedale"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.4100, 43.7000],
+          [-79.3700, 43.7000],
+          [-79.3700, 43.6700],
+          [-79.4100, 43.6700],
+          [-79.4100, 43.7000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Davenport",
+        "type": "mp",
+        "slug": "davenport"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.4500, 43.6900],
+          [-79.4100, 43.6900],
+          [-79.4100, 43.6500],
+          [-79.4500, 43.6500],
+          [-79.4500, 43.6900]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Parkdale—High Park",
+        "type": "mp",
+        "slug": "parkdale-high-park"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.4900, 43.6600],
+          [-79.4500, 43.6600],
+          [-79.4500, 43.6300],
+          [-79.4900, 43.6300],
+          [-79.4900, 43.6600]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Don Valley East",
+        "type": "mp",
+        "slug": "don-valley-east"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.3700, 43.7300],
+          [-79.3300, 43.7300],
+          [-79.3300, 43.7000],
+          [-79.3700, 43.7000],
+          [-79.3700, 43.7300]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Don Valley West",
+        "type": "mp",
+        "slug": "don-valley-west"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.3700, 43.7000],
+          [-79.3300, 43.7000],
+          [-79.3300, 43.6700],
+          [-79.3700, 43.6700],
+          [-79.3700, 43.7000]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Scarborough Centre",
+        "type": "mp",
+        "slug": "scarborough-centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.2700, 43.7800],
+          [-79.2200, 43.7800],
+          [-79.2200, 43.7400],
+          [-79.2700, 43.7400],
+          [-79.2700, 43.7800]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Etobicoke Centre",
+        "type": "mp",
+        "slug": "etobicoke-centre"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.5600, 43.6700],
+          [-79.5100, 43.6700],
+          [-79.5100, 43.6300],
+          [-79.5600, 43.6300],
+          [-79.5600, 43.6700]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "York South—Weston",
+        "type": "mp",
+        "slug": "york-south-weston"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-79.5100, 43.7100],
+          [-79.4600, 43.7100],
+          [-79.4600, 43.6700],
+          [-79.5100, 43.6700],
+          [-79.5100, 43.7100]
+        ]]
+      }
+    }
+  ]
+}

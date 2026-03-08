@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Leaflet marker overrides */
+.custom-marker {
+  background: none !important;
+  border: none !important;
+}

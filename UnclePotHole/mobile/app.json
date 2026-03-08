@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Civic Pulse",
+    "slug": "civic-pulse",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "civic-pulse",
+    "splash": {
+      "backgroundColor": "#0F1115"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0F1115"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Civic Pulse to use your location for report submission."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Civic Pulse to access your photos for report submission."
+        }
+      ],
+      "expo-asset"
+    ]
+  }
+}
