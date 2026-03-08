@@ -9,12 +9,14 @@ client = InferenceHTTPClient(
     api_key="jFwyMz8yRQbXhLuPKbc4"
 )
 
+uploaded = "Downloads/UPLOADED_IMAGE.jpg"
+
 # 3. Run your workflow on an image
 model1 = client.run_workflow(
     workspace_name="ryes-workspace",
     workflow_id="text-recognition-road-defect",
     images={
-        "image": "Downloads/road_defect.jpg" # Path to your image file
+        "image": uploaded # Path to your image file
     },
     use_cache=True # Speeds up repeated requests
 )
@@ -23,7 +25,7 @@ model2 = client.run_workflow(
     workspace_name="ryes-workspace",
     workflow_id="text-recognition-fallen-trees",
     images={
-        "image": "Downloads/fallen_tree.jpg" # Path to your image file
+        "image": uploaded # Path to your image file
     },
     use_cache=True # Speeds up repeated requests
 )
@@ -32,7 +34,7 @@ model3 = client.run_workflow(
     workspace_name="ryes-workspace",
     workflow_id="text-recognition-pothole",
     images={
-        "image": "Downloads/pothole.jpg" # Path to your image file
+        "image": uploaded # Path to your image file
     },
     use_cache=True # Speeds up repeated requests
 )
@@ -47,7 +49,7 @@ model4 = client2.run_workflow(
     workspace_name="hackhive",
     workflow_id="text-recognition-flooding",
     images={
-        "image": "flooding.jpg" # Path to your image file
+        "image": uploaded # Path to your image file
     },
     use_cache=True # Speeds up repeated requests
 )
@@ -56,7 +58,7 @@ model5 = client2.run_workflow(
     workspace_name="hackhive",
     workflow_id="text-recognition-broken-lights",
     images={
-        "image": "broken_lights.jpg" # Path to your image file
+        "image": uploaded # Path to your image file
     },
     use_cache=True # Speeds up repeated requests
 )
