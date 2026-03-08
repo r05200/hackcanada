@@ -13,7 +13,9 @@ def get_profile():
     user = current_app.db.users.find_one({"_id": ObjectId(user_id)})
     if not user:
         return jsonify({"message": "not found"}), 404
-    return jsonify(User.to_dict(user)), 200
+    profile = User.to_dict(user)
+    profile["reports_count"] = current_app.db.submissions.count_documents({"user_id": user_id})
+    return jsonify(profile), 200
 
 @users_bp.route("/<user_id>", methods=["GET"])
 def get_user(user_id):

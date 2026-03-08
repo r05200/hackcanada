@@ -35,7 +35,7 @@ export default function EventDetail() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-2 text-3xl font-bold text-gray-900">{event.title}</h1>
+      <h1 className="mb-2 text-3xl font-bold text-slate-900">{event.title}</h1>
 
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <Badge color="green">{event.xp_reward} XP</Badge>
@@ -48,11 +48,11 @@ export default function EventDetail() {
 
       <Card className="mb-8">
         <CardContent>
-          <p className="mb-4 text-gray-700">{event.description}</p>
+          <p className="mb-4 text-slate-700">{event.description}</p>
           {event.location && (
-            <p className="text-sm text-gray-500">Location: {event.location}</p>
+            <p className="text-sm text-slate-500">Location: {event.location}</p>
           )}
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-500">
             Starts: {formatDate(event.starts_at)}
           </p>
         </CardContent>
@@ -63,7 +63,7 @@ export default function EventDetail() {
           <Button onClick={handleCheckin} disabled={checking}>
             {checking ? "Checking in…" : "Check In"}
           </Button>
-          {checkinMsg && <p className="text-sm text-gray-600">{checkinMsg}</p>}
+          {checkinMsg && <p className="text-sm text-slate-600">{checkinMsg}</p>}
         </div>
       )}
     </div>

@@ -13,26 +13,33 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="border-b border-gray-200 bg-white">
+    <nav className="border-b border-slate-100 bg-white sticky top-0 z-50 shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link to="/" className="text-xl font-bold text-primary-600">
-          CivicXP
+        <Link to="/" className="flex items-center gap-2">
+          <div className="flex size-9 shrink-0 items-center justify-center bg-primary/20 rounded-full">
+            <span className="material-symbols-outlined text-primary font-bold text-lg">pulse_alert</span>
+          </div>
+          <span className="text-lg font-bold text-slate-900 tracking-tight">Civic Pulse</span>
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link to="/challenges" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+          <Link to="/challenges" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
             Challenges
           </Link>
-          <Link to="/events" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+          <Link to="/events" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
             Events
           </Link>
-          <Link to="/leaderboard" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+          <Link to="/leaderboard" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
             Leaderboard
           </Link>
 
           {loggedIn && user ? (
-            <div className="flex items-center gap-4">
-              <Link to="/profile" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+                <span className="material-symbols-outlined fill text-primary text-base">star</span>
+                <span className="text-sm font-bold text-slate-700">{user.xp || 0} pts</span>
+              </div>
+              <Link to="/profile" className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
                 {user.username}
               </Link>
               <Button variant="ghost" size="sm" onClick={handleLogout}>

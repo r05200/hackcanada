@@ -4,6 +4,12 @@
 
 @layer base {
   body {
-    @apply min-h-screen;
+    @apply min-h-screen font-display;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
   }
 }

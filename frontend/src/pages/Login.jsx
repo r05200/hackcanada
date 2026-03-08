@@ -31,12 +31,15 @@ export default function Login() {
     <div className="flex min-h-[60vh] items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-5 rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
+        className="w-full max-w-sm space-y-5 rounded-xl border border-slate-100 bg-white p-8 shadow-sm"
       >
-        <h2 className="text-2xl font-bold text-gray-900">Sign In</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">Sign In</h2>
+          <p className="text-sm text-slate-500 mt-1">Welcome back to Civic Pulse</p>
+        </div>
 
         {error && (
-          <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</p>
+          <p className="rounded-lg bg-red-50 border border-red-100 p-3 text-sm text-red-600">{error}</p>
         )}
 
         <Input
@@ -62,9 +65,9 @@ export default function Login() {
           {loading ? "Signing in…" : "Sign In"}
         </Button>
 
-        <p className="text-center text-sm text-gray-600">
+        <p className="text-center text-sm text-slate-500">
           Don't have an account?{" "}
-          <Link to="/register" className="font-medium text-primary-600 hover:underline">
+          <Link to="/register" className="font-semibold text-primary-600 hover:text-primary-700">
             Register
           </Link>
         </p>

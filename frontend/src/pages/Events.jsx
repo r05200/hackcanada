@@ -27,7 +27,7 @@ export default function Events() {
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold text-gray-900">Events</h1>
+      <h1 className="mb-6 text-3xl font-bold text-slate-900">Events</h1>
 
       <form onSubmit={handleFilter} className="mb-6 flex max-w-sm gap-2">
         <Input
@@ -39,7 +39,7 @@ export default function Events() {
       </form>
 
       {events?.length === 0 && (
-        <p className="text-gray-500">No events found.</p>
+        <p className="text-slate-500">No events found.</p>
       )}
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -51,7 +51,7 @@ export default function Events() {
               </CardHeader>
               <CardContent>
                 <p className="mb-2 line-clamp-2">{ev.description}</p>
-                <p className="mb-3 text-sm text-gray-500">
+                <p className="mb-3 text-sm text-slate-500">
                   {formatDate(ev.starts_at)}
                 </p>
                 <div className="flex flex-wrap gap-1">
