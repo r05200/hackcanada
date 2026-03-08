@@ -7,7 +7,7 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
-    """Register a new user."""
+    """Register a new user and return a JWT token."""
     data = request.get_json()
     username = data.get("username")
     email = data.get("email")
@@ -20,8 +20,10 @@ def register():
         return jsonify({"message": "username or email already exists"}), 400
 
     user = User.create(username, email, password, neighborhood)
-    current_app.db.users.insert_one(user)
-    return jsonify({"message": "registered"}), 201
+    result = current_app.db.users.insert_one(user)
+    user["_id"] = result.inserted_id
+    token = create_access_token(identity=str(user["_id"]))
+    return jsonify({"access_token": token, "user": User.to_dict(user)}), 201
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
