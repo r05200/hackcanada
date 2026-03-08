@@ -58,5 +58,30 @@ def create_event():
 def checkin_event(event_id):
     """Check into a community event to earn XP."""
     user_id = get_jwt_identity()
-    # TODO: verify location, award XP to user
-    return jsonify({"message": "checked in", "event_id": event_id}), 200
+
+    # Prevent duplicate check-ins
+    already = current_app.db.checkins.find_one({"user_id": user_id, "event_id": event_id})
+    if already:
+        return jsonify({"message": "Already checked in to this event"}), 400
+
+    # Get event for XP reward
+    event = current_app.db.events.find_one({"_id": ObjectId(event_id)})
+    if not event:
+        return jsonify({"message": "Event not found"}), 404
+
+    xp_reward = event.get("xp_reward", 100)
+
+    # Record check-in
+    current_app.db.checkins.insert_one({"user_id": user_id, "event_id": event_id})
+
+    # Update user: increment XP, events_attended, streak; recalculate level
+    user = current_app.db.users.find_one({"_id": ObjectId(user_id)})
+    new_xp = user.get("xp", 0) + xp_reward
+    new_level = new_xp // 500 + 1
+    current_app.db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$inc": {"xp": xp_reward, "events_attended": 1, "streak": 1},
+         "$set": {"level": new_level}},
+    )
+
+    return jsonify({"message": "Checked in!", "xp_earned": xp_reward}), 200

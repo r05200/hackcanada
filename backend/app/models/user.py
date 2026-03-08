@@ -14,6 +14,8 @@ class User:
             "level": doc.get("level", 1),
             "badges": doc.get("badges", []),
             "neighborhood": doc.get("neighborhood"),
+            "streak": doc.get("streak", 0),
+            "events_attended": doc.get("events_attended", 0),
         }
 
     @staticmethod
@@ -26,5 +28,7 @@ class User:
             "level": 1,
             "badges": [],
             "neighborhood": neighborhood,
+            "streak": 0,
+            "events_attended": 0,
             "created_at": datetime.now(timezone.utc),
         }
