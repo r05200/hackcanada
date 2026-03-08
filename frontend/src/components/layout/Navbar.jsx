@@ -23,24 +23,35 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link to="/challenges" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
-            Challenges
-          </Link>
-          <Link to="/events" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
-            Events
-          </Link>
+          {loggedIn && (
+            <>
+              <Link to="/challenges" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+                Challenges
+              </Link>
+              <Link to="/events" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+                Events
+              </Link>
+            </>
+          )}
           <Link to="/leaderboard" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
             Leaderboard
           </Link>
+          {loggedIn && (
+            <Link to="/report" className="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1">
+              <span className="material-symbols-outlined text-base">report</span>
+              Report
+            </Link>
+          )}
 
           {loggedIn && user ? (
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+              <Link to="/profile" className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1">
+                <span className="material-symbols-outlined text-base">account_circle</span>
+                Account
+              </Link>
+              <Link to="/store" className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100 hover:bg-primary/10 hover:border-primary/30 transition-colors cursor-pointer">
                 <span className="material-symbols-outlined fill text-primary text-base">star</span>
                 <span className="text-sm font-bold text-slate-700">{user.xp || 0} pts</span>
-              </div>
-              <Link to="/profile" className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
-                {user.username}
               </Link>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 Logout

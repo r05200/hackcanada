@@ -1,10 +1,16 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getProfile, getBadges } from "../api/users";
+import { logout as doLogout } from "../lib/auth";
 import useFetch from "../hooks/useFetch";
 import Spinner from "../components/ui/Spinner";
+import Button from "../components/ui/Button";
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { data: user, loading: profileLoading } = useFetch(getProfile);
   const { data: badgeData, loading: badgesLoading } = useFetch(getBadges);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   if (profileLoading) return <Spinner className="mt-16" />;
   if (!user) return null;
@@ -13,6 +19,19 @@ export default function Profile() {
   const level = user.level || 1;
   const nextLevelXp = level * 500;
   const progress = Math.min((xp / nextLevelXp) * 100, 100);
+  const streak = user.streak || 0;
+  const reportsCount = user.reports_count ?? 0;
+  const votesCount = user.votes_count ?? 0;
+  const eventsAttended = user.events_attended || 0;
+  const badges = badgeData?.badges || [];
+  const joinDate = user.created_at
+    ? new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : "Recently";
+
+  const handleLogout = () => {
+    doLogout();
+    navigate("/login");
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 pb-12">
@@ -39,7 +58,7 @@ export default function Profile() {
               <span className="material-symbols-outlined text-slate-400 text-base">location_on</span>
               <span className="text-sm text-slate-500">{user.neighborhood || "No riding set"}</span>
             </div>
-            <p className="text-xs text-slate-400 mt-1">{user.email}</p>
+            <p className="text-xs text-slate-400 mt-1">{user.email} · Joined {joinDate}</p>
 
             {/* XP Progress */}
             <div className="mt-4 max-w-sm">
@@ -58,12 +77,20 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <AnimatedStatCard icon="star" label="Total XP" value={xp.toLocaleString()} color="text-primary" bg="bg-primary-50" border="border-primary-100" />
-        <AnimatedStatCard icon="military_tech" label="Level" value={level} color="text-amber-500" bg="bg-amber-50" border="border-amber-100" />
-        <AnimatedStatCard icon="description" label="Reports" value={user.reports_count ?? "—"} color="text-blue-500" bg="bg-blue-50" border="border-blue-100" />
-        <AnimatedStatCard icon="local_fire_department" label="Streak" value="3 days" color="text-orange-500" bg="bg-orange-50" border="border-orange-100" />
+      {/* Detailed Stats Grid */}
+      <div>
+        <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <span className="material-symbols-outlined text-primary fill">bar_chart</span>
+          Account Stats
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <AnimatedStatCard icon="star" label="Total XP" value={xp.toLocaleString()} color="text-primary" bg="bg-primary-50" border="border-primary-100" />
+          <AnimatedStatCard icon="military_tech" label="Level" value={level} color="text-amber-500" bg="bg-amber-50" border="border-amber-100" />
+          <AnimatedStatCard icon="flag" label="Reports" value={reportsCount} color="text-blue-500" bg="bg-blue-50" border="border-blue-100" />
+          <AnimatedStatCard icon="how_to_vote" label="Votes Cast" value={votesCount} color="text-purple-500" bg="bg-purple-50" border="border-purple-100" />
+          <AnimatedStatCard icon="local_fire_department" label="Day Streak" value={streak} color="text-orange-500" bg="bg-orange-50" border="border-orange-100" />
+          <AnimatedStatCard icon="calendar_today" label="Events" value={eventsAttended} color="text-emerald-500" bg="bg-emerald-50" border="border-emerald-100" />
+        </div>
       </div>
 
       {/* Badges Section */}
@@ -71,12 +98,13 @@ export default function Profile() {
         <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-5">
           <span className="material-symbols-outlined text-amber-500 fill">workspace_premium</span>
           Earned Badges
+          <span className="text-xs font-bold text-slate-400 ml-auto">{badges.length} earned</span>
         </h2>
         {badgesLoading ? (
           <Spinner />
-        ) : badgeData?.badges?.length > 0 ? (
+        ) : badges.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {badgeData.badges.map((b) => (
+            {badges.map((b) => (
               <BadgeCard key={b} name={b} />
             ))}
           </div>
@@ -87,6 +115,46 @@ export default function Profile() {
             <p className="text-slate-400 text-xs mt-1">Complete challenges to earn your first badge!</p>
           </div>
         )}
+      </div>
+
+      {/* Settings */}
+      <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-5">
+          <span className="material-symbols-outlined text-slate-500">settings</span>
+          Settings
+        </h2>
+        <div className="divide-y divide-slate-100">
+          <SettingRow
+            icon="notifications"
+            label="Push Notifications"
+            description="Get notified about new challenges and events"
+            toggle
+            checked={notificationsEnabled}
+            onChange={() => setNotificationsEnabled(!notificationsEnabled)}
+          />
+          <SettingRow
+            icon="edit"
+            label="Edit Profile"
+            description="Update your username, neighborhood, and email"
+            arrow
+          />
+          <SettingRow
+            icon="privacy_tip"
+            label="Privacy Policy"
+            description="Read about how we protect your data"
+            arrow
+          />
+          <div className="flex items-center gap-4 py-4 cursor-pointer group" onClick={handleLogout}>
+            <div className="size-10 rounded-lg bg-red-50 flex items-center justify-center">
+              <span className="material-symbols-outlined text-red-500">logout</span>
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-red-500 group-hover:text-red-600 transition-colors">Logout</p>
+              <p className="text-xs text-slate-400">Sign out of your account</p>
+            </div>
+            <span className="material-symbols-outlined text-red-300 text-lg">chevron_right</span>
+          </div>
+        </div>
       </div>
 
       {/* Activity Preview */}
@@ -138,6 +206,29 @@ function ActivityRow({ icon, color, text, time, xp }) {
       <span className="flex-1 text-sm text-slate-700 font-medium">{text}</span>
       <span className="text-xs text-slate-400">{time}</span>
       <span className="text-xs font-bold text-primary">{xp} XP</span>
+    </div>
+  );
+}
+
+function SettingRow({ icon, label, description, toggle, checked, onChange, arrow }) {
+  return (
+    <div className="flex items-center gap-4 py-4 cursor-pointer group">
+      <div className="size-10 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-colors">
+        <span className="material-symbols-outlined text-slate-500">{icon}</span>
+      </div>
+      <div className="flex-1">
+        <p className="font-bold text-slate-900 text-sm">{label}</p>
+        {description && <p className="text-xs text-slate-400">{description}</p>}
+      </div>
+      {toggle && (
+        <button
+          onClick={onChange}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${checked ? "bg-primary" : "bg-slate-200"}`}
+        >
+          <span className={`inline-block size-4 transform rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`} />
+        </button>
+      )}
+      {arrow && <span className="material-symbols-outlined text-slate-300 text-lg">chevron_right</span>}
     </div>
   );
 }

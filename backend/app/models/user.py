@@ -16,6 +16,7 @@ class User:
             "neighborhood": doc.get("neighborhood"),
             "streak": doc.get("streak", 0),
             "events_attended": doc.get("events_attended", 0),
+            "reports_filed": doc.get("reports_filed", 0),
         }
 
     @staticmethod

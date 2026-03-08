@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import { isLoggedIn } from "./lib/auth";
 import Home from "./pages/Home";
@@ -10,6 +10,16 @@ import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
+import Report from "./pages/Report";
+import Store from "./pages/Store";
+
+function ProtectedRoute({ children }) {
+  const location = useLocation();
+  if (!isLoggedIn()) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return children;
+}
 
 export default function App() {
   return (
@@ -18,15 +28,14 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/challenges" element={<Challenges />} />
-        <Route path="/challenges/:id" element={<ChallengeDetail />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/challenges" element={<ProtectedRoute><Challenges /></ProtectedRoute>} />
+        <Route path="/challenges/:id" element={<ProtectedRoute><ChallengeDetail /></ProtectedRoute>} />
+        <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
+        <Route path="/events/:id" element={<ProtectedRoute><EventDetail /></ProtectedRoute>} />
         <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route
-          path="/profile"
-          element={isLoggedIn() ? <Profile /> : <Navigate to="/login" replace />}
-        />
+        <Route path="/report" element={<ProtectedRoute><Report /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/store" element={<ProtectedRoute><Store /></ProtectedRoute>} />
       </Route>
     </Routes>
   );

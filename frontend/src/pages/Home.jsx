@@ -1,9 +1,34 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { isLoggedIn } from "../lib/auth";
 import { getProfile } from "../api/users";
 import useFetch from "../hooks/useFetch";
 import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
+
+const DAILY_CHALLENGES_POOL = [
+  { icon: "report_problem", iconBg: "bg-red-50", iconColor: "text-red-500", title: "Report 1 local issue", subtitle: "Potholes, streetlights, or graffiti", points: 50 },
+  { icon: "delete", iconBg: "bg-emerald-50", iconColor: "text-emerald-500", title: "Pick up trash in your area", subtitle: "Clean up litter near your home or park", points: 75 },
+  { icon: "menu_book", iconBg: "bg-blue-50", iconColor: "text-blue-500", title: "Read about your local laws", subtitle: "Visit your city council website", points: 30 },
+  { icon: "directions_bike", iconBg: "bg-green-50", iconColor: "text-green-500", title: "Walk or bike instead of driving", subtitle: "Reduce your carbon footprint today", points: 40 },
+  { icon: "people", iconBg: "bg-purple-50", iconColor: "text-purple-500", title: "Talk to a neighbour", subtitle: "Check in on someone in your community", points: 35 },
+  { icon: "lightbulb", iconBg: "bg-amber-50", iconColor: "text-amber-500", title: "Report a broken streetlight", subtitle: "Help keep your neighbourhood safe", points: 50 },
+  { icon: "event", iconBg: "bg-orange-50", iconColor: "text-orange-500", title: "Attend a community event", subtitle: "Find a local meetup or town hall", points: 100 },
+  { icon: "park", iconBg: "bg-green-50", iconColor: "text-green-600", title: "Plant a tree or water plants", subtitle: "Contribute to local green spaces", points: 60 },
+  { icon: "volunteer_activism", iconBg: "bg-pink-50", iconColor: "text-pink-500", title: "Volunteer for 30 minutes", subtitle: "Help at a shelter, food bank, or cleanup", points: 100 },
+  { icon: "share", iconBg: "bg-sky-50", iconColor: "text-sky-500", title: "Share a civic tip online", subtitle: "Post about a local issue on social media", points: 25 },
+];
+
+function getDailyChallenges() {
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const shuffled = [...DAILY_CHALLENGES_POOL].sort((a, b) => {
+    const hashA = ((seed * 31 + DAILY_CHALLENGES_POOL.indexOf(a)) * 17) % 1000;
+    const hashB = ((seed * 31 + DAILY_CHALLENGES_POOL.indexOf(b)) * 17) % 1000;
+    return hashA - hashB;
+  });
+  return shuffled.slice(0, 3);
+}
 
 export default function Home() {
   return isLoggedIn() ? <Dashboard /> : <LandingPage />;
@@ -75,35 +100,12 @@ function Dashboard() {
 
       {/* Main Grid */}
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Left — Quests */}
+        {/* Left — Challenges & Poll */}
         <div className="md:col-span-2 space-y-6">
-          <div>
-            <h3 className="text-slate-900 text-lg font-bold mb-3 flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary fill">task_alt</span> Daily Quests
-            </h3>
-            <div className="space-y-3">
-              <QuestCard icon="report_problem" iconBg="bg-red-50" iconColor="text-red-500" title="Report 1 local issue" subtitle="Potholes, streetlights, or graffiti" points={50} />
-              <QuestCard icon="how_to_vote" iconBg="bg-blue-50" iconColor="text-blue-500" title="Vote in a community poll" subtitle="Share your voice on local issues" points={25} completed />
-              <QuestCard icon="volunteer_activism" iconBg="bg-purple-50" iconColor="text-purple-500" title="Attend a community event" subtitle="Check in at a local gathering" points={75} />
-            </div>
-          </div>
+          <DailyChallengesSection />
 
           {/* Quick Poll */}
-          <div className="rounded-xl border-2 border-primary/30 bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <span className="px-2.5 py-1 bg-primary text-slate-900 text-[10px] font-bold uppercase rounded tracking-widest">Quick Poll</span>
-              <span className="text-slate-400 text-xs font-medium">Ends in 4h</span>
-            </div>
-            <h4 className="text-xl font-bold text-slate-900 mb-4">New Bike Lanes on 5th Ave?</h4>
-            <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-2 py-3 px-4 bg-primary text-slate-900 font-bold rounded-lg hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                <span className="material-symbols-outlined">thumb_up</span> Support
-              </button>
-              <button className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 text-slate-900 font-bold rounded-lg hover:bg-slate-200 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                <span className="material-symbols-outlined">thumb_down</span> Oppose
-              </button>
-            </div>
-          </div>
+          <PollSection />
         </div>
 
         {/* Right — Sidebar */}
@@ -239,6 +241,217 @@ function QuestCard({ icon, iconBg, iconColor, title, subtitle, points, completed
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ─── Daily Challenges Section ──────────────────────────── */
+function DailyChallengesSection() {
+  const [challenges, setChallenges] = useState(() => getDailyChallenges().map((c, i) => ({ ...c, _id: i })));
+  const [accepted, setAccepted] = useState([]);
+  const [expanded, setExpanded] = useState(null);
+  const [declining, setDeclining] = useState(null);
+
+  const handleAccept = (ch) => {
+    setAccepted((prev) => [...prev, ch]);
+    setChallenges((prev) => prev.filter((c) => c._id !== ch._id));
+    setExpanded(null);
+  };
+
+  const handleDecline = (ch) => {
+    setDeclining(ch._id);
+    setTimeout(() => {
+      setChallenges((prev) => prev.filter((c) => c._id !== ch._id));
+      setDeclining(null);
+      setExpanded(null);
+    }, 400);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Available Challenges */}
+      {challenges.length > 0 && (
+        <div>
+          <h3 className="text-slate-900 text-lg font-bold mb-3 flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary fill">bolt</span> Daily Challenges
+          </h3>
+          <div className="space-y-3">
+            {challenges.map((ch) => (
+              <div
+                key={ch._id}
+                className={`transition-all duration-400 ${
+                  declining === ch._id
+                    ? "opacity-0 -translate-x-full max-h-0 mb-0 overflow-hidden"
+                    : "opacity-100 translate-x-0 max-h-40"
+                }`}
+                style={{ transitionProperty: "opacity, transform, max-height, margin" }}
+              >
+                <div
+                  onClick={() => setExpanded(expanded === ch._id ? null : ch._id)}
+                  className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4 transition-all hover:shadow-md hover:scale-[1.01] cursor-pointer"
+                >
+                  <div className={`size-12 rounded-xl ${ch.iconBg} flex items-center justify-center shrink-0`}>
+                    <span className={`material-symbols-outlined ${ch.iconColor} text-2xl`}>{ch.icon}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-slate-900">{ch.title}</p>
+                    <p className="text-slate-500 text-sm truncate">{ch.subtitle}</p>
+                  </div>
+                  <div className="text-right shrink-0 flex items-center gap-2">
+                    <div>
+                      <p className="text-primary font-extrabold text-lg leading-none">+{ch.points}</p>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wide">Points</p>
+                    </div>
+                    <span className={`material-symbols-outlined text-slate-300 text-xl transition-transform ${expanded === ch._id ? "rotate-180" : ""}`}>expand_more</span>
+                  </div>
+                </div>
+                {/* Accept / Decline buttons */}
+                {expanded === ch._id && (
+                  <div className="flex gap-2 mt-2 px-2 animate-fade-in">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleAccept(ch); }}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary hover:bg-primary/90 text-slate-900 font-bold text-sm rounded-lg transition-all active:scale-[0.97]"
+                    >
+                      <span className="material-symbols-outlined text-base">check</span> Accept
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDecline(ch); }}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 font-bold text-sm rounded-lg transition-all active:scale-[0.97]"
+                    >
+                      <span className="material-symbols-outlined text-base">close</span> Decline
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Accepted / Current Challenges */}
+      {accepted.length > 0 && (
+        <div>
+          <h3 className="text-slate-900 text-lg font-bold mb-3 flex items-center gap-2">
+            <span className="material-symbols-outlined text-emerald-500 fill">task_alt</span> Current Challenges
+          </h3>
+          <div className="space-y-3">
+            {accepted.map((ch) => (
+              <div
+                key={ch._id}
+                className="bg-primary/5 p-4 rounded-xl border border-primary/20 shadow-sm flex items-center gap-4 animate-fade-in"
+              >
+                <div className={`size-12 rounded-xl ${ch.iconBg} flex items-center justify-center shrink-0`}>
+                  <span className={`material-symbols-outlined ${ch.iconColor} text-2xl`}>{ch.icon}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-slate-900">{ch.title}</p>
+                  <p className="text-slate-500 text-sm truncate">{ch.subtitle}</p>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  <span className="px-2.5 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full">In Progress</span>
+                  <div className="text-right">
+                    <p className="text-primary font-extrabold text-lg leading-none">+{ch.points}</p>
+                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wide">Points</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {challenges.length === 0 && accepted.length === 0 && (
+        <div className="text-center py-8 text-slate-400">
+          <span className="material-symbols-outlined text-4xl mb-2">check_circle</span>
+          <p className="font-semibold">All done for today!</p>
+          <p className="text-sm">Come back tomorrow for new challenges.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Poll Section with confirm + checkmark ─────────────── */
+function PollSection() {
+  const [vote, setVote] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+
+  const handleVote = (type) => {
+    if (confirmed) return;
+    setVote(type);
+    setShowConfirm(true);
+  };
+
+  const handleConfirm = () => {
+    setShowConfirm(false);
+    setConfirmed(true);
+  };
+
+  const handleCancel = () => {
+    setVote(null);
+    setShowConfirm(false);
+  };
+
+  return (
+    <div className="rounded-xl border-2 border-primary/30 bg-white p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <span className="px-2.5 py-1 bg-primary text-slate-900 text-[10px] font-bold uppercase rounded tracking-widest">Quick Poll</span>
+        <span className="text-slate-400 text-xs font-medium">Ends in 4h</span>
+      </div>
+      <h4 className="text-xl font-bold text-slate-900 mb-4">New Bike Lanes on 5th Ave?</h4>
+
+      {!confirmed ? (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => handleVote("support")}
+              className={`flex items-center justify-center gap-2 py-3 px-4 font-bold rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                vote === "support"
+                  ? "bg-primary text-slate-900 ring-2 ring-primary/50"
+                  : "bg-primary/10 text-slate-900 hover:bg-primary/20"
+              }`}
+            >
+              <span className="material-symbols-outlined">thumb_up</span> Support
+            </button>
+            <button
+              onClick={() => handleVote("oppose")}
+              className={`flex items-center justify-center gap-2 py-3 px-4 font-bold rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                vote === "oppose"
+                  ? "bg-red-500 text-white ring-2 ring-red-500/50"
+                  : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+              }`}
+            >
+              <span className="material-symbols-outlined">thumb_down</span> Oppose
+            </button>
+          </div>
+          {showConfirm && (
+            <div className="flex items-center gap-3 mt-4 animate-fade-in">
+              <button
+                onClick={handleConfirm}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-emerald-500 text-white font-bold rounded-lg hover:bg-emerald-600 transition-all active:scale-[0.98]"
+              >
+                <span className="material-symbols-outlined text-base">check</span>
+                Confirm {vote === "support" ? "Support" : "Oppose"}
+              </button>
+              <button
+                onClick={handleCancel}
+                className="py-2.5 px-4 text-slate-500 font-medium hover:text-slate-700 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="flex flex-col items-center py-6 animate-scale-in">
+          <div className={`size-16 rounded-full flex items-center justify-center ${vote === "support" ? "bg-primary" : "bg-red-500"}`}>
+            <span className="material-symbols-outlined text-white text-3xl fill">check</span>
+          </div>
+          <p className="font-bold text-slate-900 mt-3">Vote recorded!</p>
+          <p className="text-sm text-slate-500">You {vote === "support" ? "supported" : "opposed"} this petition</p>
+        </div>
+      )}
     </div>
   );
 }
